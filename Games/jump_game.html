@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Zıplayan Karakter</title>
+    <style>
+        body { margin:0; font-family:sans-serif; display:flex; justify-content:center; align-items:center; height:100vh; background-color:#cceeff;}
+        #game { position:relative; width:600px; height:300px; background:#87ceeb; border:2px solid #000; overflow:hidden;}
+        #character { position:absolute; bottom:0; left:50px; width:50px; height:50px; background:#ffcc00; border-radius:10px; }
+        #obstacle { position:absolute; bottom:0; right:0; width:30px; height:50px; background:#ff0000; }
+        #score { position:absolute; top:5px; left:5px; font-weight:bold; font-size:20px;}
+    </style>
+</head>
+<body>
+    <div id="game">
+        <div id="score">Skor: 0</div>
+        <div id="character"></div>
+        <div id="obstacle"></div>
+    </div>
+    <script>
+        const character = document.getElementById('character');
+        const obstacle = document.getElementById('obstacle');
+        const scoreDisplay = document.getElementById('score');
+        let score=0, jumping=false;
+
+        function jump() {
+            if(jumping) return;
+            jumping=true;
+            let h=0;
+            const up=setInterval(()=>{
+                if(h>=150){ clearInterval(up);
+                    const down=setInterval(()=>{
+                        if(h<=0){ clearInterval(down); jumping=false;}
+                        h-=5; character.style.bottom=h+'px';
+                    },20);
+                }
+                h+=5; character.style.bottom=h+'px';
+            },20);
+        }
+
+        document.addEventListener('keydown', jump);
+
+        function moveObstacle(){
+            let pos=600;
+            setInterval(()=>{
+                if(pos<-30){ pos=600; score++; scoreDisplay.textContent='Skor: '+score; }
+                pos-=5; obstacle.style.right=pos+'px';
+                const charBottom=parseInt(character.style.bottom);
+                if(pos<100 && pos>50 && charBottom<50){
+                    alert('Oyun Bitti! Skor: '+score); score=0; scoreDisplay.textContent='Skor: 0'; pos=600;
+                }
+            },20);
+        }
+        moveObstacle();
+    </script>
+</body>
+</html>

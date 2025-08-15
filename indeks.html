@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aslan Egenin Oyun Dünyası</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #cceeff;
+        }
+        header {
+            background-color: #87ceeb;
+            padding: 20px;
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            color: #000;
+        }
+        #search-bar {
+            width: 50%;
+            padding: 10px;
+            font-size: 16px;
+            margin: 20px auto;
+            display: block;
+            border-radius: 5px;
+            border: 1px solid #000;
+        }
+        #games-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+        }
+        .game-card {
+            background-color: #fff;
+            border: 2px solid #000;
+            border-radius: 10px;
+            width: 200px;
+            text-align: center;
+            padding: 10px;
+        }
+        .game-card img {
+            width: 100%;
+            border-radius: 5px;
+        }
+        .play-btn {
+            padding: 10px 20px;
+            margin-top: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #ffcc00;
+            border: 2px solid #000;
+            border-radius: 5px;
+        }
+        /* Modal */
+        #game-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+        }
+        #game-frame {
+            background-color: #87ceeb;
+            padding: 20px;
+            border-radius: 10px;
+            position: relative;
+            width: 600px;
+            height: 350px;
+        }
+        #close-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            cursor: pointer;
+            background-color: #ff0000;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>Aslan Egenin Oyun Dünyasına Hoşgeldiniz</header>
+    <input type="text" id="search-bar" placeholder="Oyun ara...">
+
+    <div id="games-container"></div>
+
+    <!-- Oyun modal -->
+    <div id="game-modal">
+        <div id="game-frame">
+            <button id="close-btn">X</button>
+            <iframe id="game-iframe" src="" width="100%" height="100%" style="border:none;"></iframe>
+        </div>
+    </div>
+
+    <script>
+        // Oyun verileri (sen her oyun için buraya ekleyeceksin)
+        const games = [
+            {
+                title: "Zıplayan Karakter",
+                image: "images/ziplayan.png", // GitHub'a yükle
+                description: "Basit bir zıplayan karakter oyunu.",
+                file: "games/jump_game.html" // GitHub'a yükle
+            },
+            {
+                title: "Örnek Oyun 2",
+                image: "example2.png",
+                description: "Bu oyun ikinci örnek oyun.",
+                file: "example2.html"
+            }
+        ];
+
+        const gamesContainer = document.getElementById('games-container');
+        const searchBar = document.getElementById('search-bar');
+        const gameModal = document.getElementById('game-modal');
+        const gameIframe = document.getElementById('game-iframe');
+        const closeBtn = document.getElementById('close-btn');
+
+        function escapeHTML(str) {
+            // XSS önlemi
+            return str.replace(/[&<>"']/g, function(match) {
+                return ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                })[match];
+            });
+        }
+
+        function displayGames(filter="") {
+            gamesContainer.innerHTML = "";
+            games.forEach(game => {
+                if (game.title.toLowerCase().includes(filter.toLowerCase())) {
+                    const card = document.createElement('div');
+                    card.className = "game-card";
+                    card.innerHTML = `
+                        <img src="${escapeHTML(game.image)}" alt="${escapeHTML(game.title)}">
+                        <h3>${escapeHTML(game.title)}</h3>
+                        <p>${escapeHTML(game.description)}</p>
+                        <button class="play-btn">Oyna</button>
+                    `;
+                    const playBtn = card.querySelector(".play-btn");
+                    playBtn.addEventListener('click', () => {
+                        gameIframe.src = escapeHTML(game.file);
+                        gameModal.style.display = "flex";
+                    });
+                    gamesContainer.appendChild(card);
+                }
+            });
+        }
+
+        searchBar.addEventListener('input', () => {
+            displayGames(searchBar.value);
+        });
+
+        closeBtn.addEventListener('click', () => {
+            gameModal.style.display = "none";
+            gameIframe.src = "";
+        });
+
+        // Başlangıçta tüm oyunları göster
+        displayGames();
+    </script>
+</body>
+</html>
